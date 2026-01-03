@@ -25,12 +25,20 @@
         input::-webkit-outer-spin-button,
         input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         
-        /* Smooth transitions for buttons */
         .btn-reset {
             transition: all 0.2s ease;
         }
         .btn-reset:active {
             transform: scale(0.95);
+        }
+
+        /* Update Notification Toast */
+        #update-toast {
+            transform: translateY(100px);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #update-toast.show {
+            transform: translateY(0);
         }
     </style>
     <script>
@@ -53,9 +61,12 @@
         <h1 class="text-xl font-bold flex items-center gap-2 dark:text-white">
             <i data-lucide="activity" class="text-blue-600"></i> Multitool Medis
         </h1>
-        <button onclick="toggleDarkMode()" class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-            <i id="theme-icon" data-lucide="moon" class="text-slate-600 dark:text-amber-400"></i>
-        </button>
+        <div class="flex items-center gap-2">
+            <div id="update-status" class="text-[10px] font-bold text-slate-400 hidden lg:block">Versi Terbaru</div>
+            <button onclick="toggleDarkMode()" class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                <i id="theme-icon" data-lucide="moon" class="text-slate-600 dark:text-amber-400"></i>
+            </button>
+        </div>
     </nav>
 
     <div class="max-w-2xl mx-auto mt-6 px-4 space-y-4">
@@ -332,7 +343,67 @@
 
     </div>
 
+    <!-- Update Toast Notification -->
+    <div id="update-toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] w-[90%] max-w-md bg-slate-900 text-white p-4 rounded-2xl shadow-2xl flex items-center justify-between border border-slate-700">
+        <div class="flex items-center gap-3">
+            <div class="bg-blue-500 p-2 rounded-lg animate-pulse">
+                <i data-lucide="cloud-download" class="w-5 h-5 text-white"></i>
+            </div>
+            <div>
+                <p class="text-xs font-bold">Pembaruan Tersedia</p>
+                <p class="text-[10px] text-slate-400">Versi terbaru telah dirilis di GitHub.</p>
+            </div>
+        </div>
+        <button onclick="window.location.reload(true)" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-wider transition-colors">
+            Muat Ulang
+        </button>
+    </div>
+
     <script>
+        // --- AUTO UPDATE LOGIC ---
+        // GANTI INI DENGAN REPO ANDA SENDIRI
+        const GITHUB_REPO = "igdrsdh/Multitool-IGD"; // Format: username/repo
+        const CURRENT_VERSION_HASH = "local-dev"; // Akan otomatis dibandingkan dengan hash commit terbaru
+
+        async function checkForUpdates() {
+            if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") return;
+            
+            try {
+                // Mengambil info commit terakhir dari branch main menggunakan API GitHub
+                const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/commits/main`, {
+                    headers: { 'Accept': 'application/vnd.github.v3+json' }
+                });
+                
+                if (!response.ok) return;
+                
+                const data = await response.json();
+                const latestHash = data.sha;
+                const localHash = localStorage.getItem('app_version_hash');
+
+                // Jika ini kunjungan pertama, simpan hash saat ini
+                if (!localHash) {
+                    localStorage.setItem('app_version_hash', latestHash);
+                    return;
+                }
+
+                // Jika hash berbeda, tampilkan notifikasi update
+                if (localHash !== latestHash) {
+                    document.getElementById('update-toast').classList.add('show');
+                    document.getElementById('update-status').innerText = "Update Tersedia!";
+                    document.getElementById('update-status').classList.remove('text-slate-400');
+                    document.getElementById('update-status').classList.add('text-orange-500');
+                    // Simpan hash baru (akan aktif setelah reload)
+                    localStorage.setItem('app_version_hash', latestHash);
+                }
+            } catch (error) {
+                console.error("Update check failed", error);
+            }
+        }
+
+        // Jalankan pengecekan saat load dan setiap 10 menit
+        setTimeout(checkForUpdates, 3000);
+        setInterval(checkForUpdates, 600000);
+
         // --- DATA & STATE ---
         let darkMode = false;
         let gcs = { e: 1, v: 1, m: 1 };

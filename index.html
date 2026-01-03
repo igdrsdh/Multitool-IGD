@@ -24,6 +24,14 @@
         .tab-content.active { display: block; }
         input::-webkit-outer-spin-button,
         input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        
+        /* Smooth transitions for buttons */
+        .btn-reset {
+            transition: all 0.2s ease;
+        }
+        .btn-reset:active {
+            transform: scale(0.95);
+        }
     </style>
     <script>
         tailwind.config = {
@@ -38,7 +46,7 @@
         }
     </script>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 transition-colors duration-300 pb-20">
+<body class="bg-slate-50 dark:bg-slate-950 transition-colors duration-300 pb-24">
 
     <!-- Navigasi -->
     <nav class="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-6 py-4 flex justify-between items-center">
@@ -52,12 +60,99 @@
 
     <div class="max-w-2xl mx-auto mt-6 px-4 space-y-4">
 
+        <!-- SECTION SIRIRAJ STROKE SCORE -->
+        <div class="section-container rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
+            <button onclick="toggleSection('siriraj')" class="w-full p-5 flex items-center justify-between group text-left">
+                <div class="flex items-center gap-4">
+                    <div class="p-2 rounded-lg bg-slate-50 dark:bg-slate-800"><i data-lucide="brain-circuit" class="text-blue-500"></i></div>
+                    <span class="font-black text-slate-800 dark:text-white uppercase tracking-wider text-[12px]">Siriraj Stroke Score (SSS)</span>
+                </div>
+                <i data-lucide="chevron-down" id="icon-siriraj" class="text-slate-400 transition-transform"></i>
+            </button>
+            <div id="content-siriraj" class="tab-content p-5 pt-0 border-t border-slate-50 dark:border-slate-800">
+                <div class="bg-white dark:bg-slate-900 border-2 border-blue-500/20 rounded-2xl p-6 text-center mb-8 mt-4">
+                    <div class="text-xs font-black text-blue-500 uppercase tracking-[0.2em] mb-2">Skor Siriraj</div>
+                    <div id="sss-total" class="text-6xl font-black dark:text-white mb-2">0.0</div>
+                    <div id="sss-category" class="text-sm font-bold uppercase tracking-wide text-blue-500">Lengkapi data klinis</div>
+                </div>
+                
+                <div class="space-y-6">
+                    <div>
+                        <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1 mb-2 block">Derajat Kesadaran</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button onclick="setSSS('con', 0)" id="sss-con-0" class="sss-btn-con py-2 text-xs font-bold rounded-lg border-2 border-slate-100 dark:border-slate-800 dark:text-slate-300">Sadar (0)</button>
+                            <button onclick="setSSS('con', 1)" id="sss-con-1" class="sss-btn-con py-2 text-xs font-bold rounded-lg border-2 border-slate-100 dark:border-slate-800 dark:text-slate-300">Mengantuk (1)</button>
+                            <button onclick="setSSS('con', 2)" id="sss-con-2" class="sss-btn-con py-2 text-xs font-bold rounded-lg border-2 border-slate-100 dark:border-slate-800 dark:text-slate-300">Koma (2)</button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1 mb-2 block">Muntah (2 Jam)</label>
+                            <div class="flex gap-2">
+                                <button onclick="setSSS('vom', 0)" id="sss-vom-0" class="sss-btn-vom flex-1 py-2 text-xs font-bold rounded-lg border-2 border-slate-100 dark:border-slate-800 dark:text-slate-300">Tidak (0)</button>
+                                <button onclick="setSSS('vom', 1)" id="sss-vom-1" class="sss-btn-vom flex-1 py-2 text-xs font-bold rounded-lg border-2 border-slate-100 dark:border-slate-800 dark:text-slate-300">Ya (1)</button>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1 mb-2 block">Sakit Kepala (2 Jam)</label>
+                            <div class="flex gap-2">
+                                <button onclick="setSSS('head', 0)" id="sss-head-0" class="sss-btn-head flex-1 py-2 text-xs font-bold rounded-lg border-2 border-slate-100 dark:border-slate-800 dark:text-slate-300">Tidak (0)</button>
+                                <button onclick="setSSS('head', 1)" id="sss-head-1" class="sss-btn-head flex-1 py-2 text-xs font-bold rounded-lg border-2 border-slate-100 dark:border-slate-800 dark:text-slate-300">Ya (1)</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1">Tekanan Darah Diastolik (mmHg)</label>
+                        <input type="number" oninput="calcSSS()" id="sss-dbp" class="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 rounded-xl p-3.5 focus:border-blue-500 focus:outline-none dark:text-white text-sm" placeholder="Contoh: 90">
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 px-1 mb-2 block">Marker Atheroma (DM, Obesitas, Claudicatio)</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button onclick="setSSS('ath', 0)" id="sss-ath-0" class="sss-btn-ath py-2 text-xs font-bold rounded-lg border-2 border-slate-100 dark:border-slate-800 dark:text-slate-300">Nol (0)</button>
+                            <button onclick="setSSS('ath', 1)" id="sss-ath-1" class="sss-btn-ath py-2 text-xs font-bold rounded-lg border-2 border-slate-100 dark:border-slate-800 dark:text-slate-300">Satu (1)</button>
+                            <button onclick="setSSS('ath', 2)" id="sss-ath-2" class="sss-btn-ath py-2 text-xs font-bold rounded-lg border-2 border-slate-100 dark:border-slate-800 dark:text-slate-300">Dua+ (2)</button>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="resetSSS()" class="btn-reset w-full mt-6 flex items-center justify-center gap-2 py-3 text-slate-400 hover:text-blue-500 font-bold transition">
+                    <i data-lucide="refresh-cw" size="14"></i> Atur Ulang SSS
+                </button>
+            </div>
+        </div>
+
+        <!-- SECTION APGAR SCORE -->
+        <div class="section-container rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
+            <button onclick="toggleSection('apgar')" class="w-full p-5 flex items-center justify-between group text-left">
+                <div class="flex items-center gap-4">
+                    <div class="p-2 rounded-lg bg-slate-50 dark:bg-slate-800"><i data-lucide="baby" class="text-purple-500"></i></div>
+                    <span class="font-black text-slate-800 dark:text-white uppercase tracking-wider text-[12px]">Skor APGAR</span>
+                </div>
+                <i data-lucide="chevron-down" id="icon-apgar" class="text-slate-400 transition-transform"></i>
+            </button>
+            <div id="content-apgar" class="tab-content p-5 pt-0 border-t border-slate-50 dark:border-slate-800">
+                <div class="bg-white dark:bg-slate-900 border-2 border-purple-500/20 rounded-2xl p-6 text-center mb-8 mt-4">
+                    <div class="text-xs font-black text-purple-500 uppercase tracking-[0.2em] mb-2">Total Skor APGAR</div>
+                    <div id="apgar-total" class="text-6xl font-black dark:text-white mb-2">0</div>
+                    <div id="apgar-category" class="text-sm font-bold uppercase tracking-wide text-purple-500">Silakan isi semua kriteria</div>
+                </div>
+                <div class="space-y-8" id="apgar-options-container">
+                    <!-- APGAR Options Generated by JS -->
+                </div>
+                <button onclick="resetApgar()" class="btn-reset w-full mt-8 flex items-center justify-center gap-2 py-3 text-slate-400 hover:text-purple-500 font-bold transition">
+                    <i data-lucide="refresh-cw" size="14"></i> Atur Ulang APGAR
+                </button>
+            </div>
+        </div>
+
         <!-- SECTION GCS -->
         <div class="section-container rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
             <button onclick="toggleSection('gcs')" class="w-full p-5 flex items-center justify-between group text-left">
                 <div class="flex items-center gap-4">
                     <div class="p-2 rounded-lg bg-slate-50 dark:bg-slate-800"><i data-lucide="brain" class="text-rose-500"></i></div>
-                    <span class="font-black text-slate-800 dark:text-white uppercase tracking-wider text-[12px]">Klasifikasi GCS</span>
+                    <span class="font-black text-slate-800 dark:text-white uppercase tracking-wider text-[12px]">Glasgow Coma Scale (GCS)</span>
                 </div>
                 <i data-lucide="chevron-down" id="icon-gcs" class="text-slate-400 transition-transform"></i>
             </button>
@@ -70,6 +165,9 @@
                 <div class="space-y-8" id="gcs-options-container">
                     <!-- GCS Options Generated by JS -->
                 </div>
+                <button onclick="resetGcs()" class="btn-reset w-full mt-8 flex items-center justify-center gap-2 py-3 text-slate-400 hover:text-rose-500 font-bold transition">
+                    <i data-lucide="refresh-cw" size="14"></i> Atur Ulang GCS
+                </button>
             </div>
         </div>
 
@@ -94,8 +192,8 @@
                 <div id="tbsa-grid" class="grid grid-cols-2 gap-3">
                     <!-- TBSA Parts Generated by JS -->
                 </div>
-                <button onclick="resetTbsa()" class="w-full mt-4 flex items-center justify-center gap-2 py-3 text-slate-500 hover:text-orange-500 font-bold transition">
-                    <i data-lucide="refresh-cw" size="16"></i> Atur Ulang TBSA
+                <button onclick="resetTbsa()" class="btn-reset w-full mt-4 flex items-center justify-center gap-2 py-3 text-slate-400 hover:text-orange-500 font-bold transition">
+                    <i data-lucide="refresh-cw" size="14"></i> Atur Ulang TBSA
                 </button>
             </div>
         </div>
@@ -197,15 +295,80 @@
             </div>
         </div>
 
+        <!-- PERINGATAN (WARNING BOX) -->
+        <div class="mt-8 p-6 rounded-2xl border-2 border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-950/20 shadow-inner">
+            <div class="flex items-start gap-4">
+                <div class="mt-1 p-2 rounded-full bg-amber-100 dark:bg-amber-900/40">
+                    <i data-lucide="alert-triangle" class="text-amber-600 dark:text-amber-500 w-5 h-5"></i>
+                </div>
+                <div class="space-y-1">
+                    <h3 class="text-sm font-black text-amber-800 dark:text-amber-400 uppercase tracking-widest">Peringatan Penting</h3>
+                    <p class="text-xs font-medium text-amber-700/80 dark:text-amber-500/80 leading-relaxed">
+                        Aplikasi ini hanya alat bantu hitung. Hasil perhitungan <strong>wajib</strong> diperiksa ulang dan disesuaikan dengan teori medis terbaru, protokol rumah sakit, serta kondisi klinis pasien. Segala keputusan medis sepenuhnya merupakan tanggung jawab tenaga kesehatan.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- REFERENSI & LITERASI -->
+        <div class="mt-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm overflow-hidden opacity-80 hover:opacity-100 transition-opacity">
+            <button onclick="toggleSection('refs')" class="w-full p-4 flex items-center justify-between group text-left">
+                <div class="flex items-center gap-3">
+                    <div class="p-1.5 rounded-lg bg-slate-50 dark:bg-slate-800"><i data-lucide="book-open" class="text-slate-400 w-4 h-4"></i></div>
+                    <span class="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em]">Referensi & Sumber Literasi</span>
+                </div>
+                <i data-lucide="chevron-down" id="icon-refs" class="text-slate-400 transition-transform w-4 h-4"></i>
+            </button>
+            <div id="content-refs" class="tab-content p-5 pt-0 border-t border-slate-50 dark:border-slate-800">
+                <ul class="text-[11px] text-slate-600 dark:text-slate-400 space-y-3 leading-relaxed list-disc pl-4 mt-4">
+                    <li><strong>Siriraj Stroke Score (SSS):</strong> Poungvarin N, et al. BMJ. 1991.</li>
+                    <li><strong>GCS (Glasgow Coma Scale):</strong> Teasdale G, Jennett B. 1974. Lancet.</li>
+                    <li><strong>Skor APGAR:</strong> Apgar V. 1953. American Academy of Pediatrics & ACOG.</li>
+                    <li><strong>TBSA (Rule of Nines):</strong> Wallace AB. 1951. Lancet. Standar ATLS edisi ke-10.</li>
+                    <li><strong>Kalkulasi Klinis:</strong> Bermel, Mary A. <i>Dosage Calculations.</i> Cengage Learning.</li>
+                </ul>
+            </div>
+        </div>
+
     </div>
 
     <script>
         // --- DATA & STATE ---
         let darkMode = false;
         let gcs = { e: 1, v: 1, m: 1 };
+        let apgar = { appearance: null, pulse: null, grimace: null, activity: null, respiration: null };
         let tbsaMode = 'adult';
         let tbsaParts = { head: 0, trunkFront: 0, trunkBack: 0, armL: 0, armR: 0, perineum: 0, legL: 0, legR: 0 };
         let infFactor = 20;
+        let sssData = { con: null, vom: null, head: null, ath: null };
+
+        const apgarLabels = {
+            appearance: { label: "Appearance (Warna Kulit)", options: [
+                { val: 0, text: "Seluruh tubuh biru atau pucat" },
+                { val: 1, text: "Tubuh kemerahan, ekstremitas biru" },
+                { val: 2, text: "Seluruh tubuh kemerahan" }
+            ]},
+            pulse: { label: "Pulse (Denyut Jantung)", options: [
+                { val: 0, text: "Tidak ada" },
+                { val: 1, text: "< 100 kali per menit" },
+                { val: 2, text: "> 100 kali per menit" }
+            ]},
+            grimace: { label: "Grimace (Refleks terhadap rangsang)", options: [
+                { val: 0, text: "Tidak ada respon" },
+                { val: 1, text: "Meringis/gerakan sedikit" },
+                { val: 2, text: "Menangis kuat, batuk, atau bersin" }
+            ]},
+            activity: { label: "Activity (Tonus Otot)", options: [
+                { val: 0, text: "Lumpuh/lemas" },
+                { val: 1, text: "Ekstremitas sedikit fleksi" },
+                { val: 2, text: "Gerakan aktif" }
+            ]},
+            respiration: { label: "Respiration (Usaha Napas)", options: [
+                { val: 0, text: "Tidak ada" },
+                { val: 1, text: "Lemah/tidak teratur" },
+                { val: 2, text: "Menangis kuat" }
+            ]}
+        };
 
         const gcsLabels = {
             e: [
@@ -243,13 +406,12 @@
 
         // --- INITIALIZATION ---
         window.onload = () => {
+            renderApgar();
             renderGcs();
             renderTbsaGrid();
             lucide.createIcons();
             
-            // Tutup semua bagian saat load
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.transition-transform').forEach(i => i.style.transform = 'rotate(0deg)');
         };
 
         // --- UI FUNCTIONS ---
@@ -272,6 +434,125 @@
             } else {
                 content.classList.add('active');
                 icon.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        // --- SIRIRAJ LOGIC ---
+        function setSSS(key, val) {
+            sssData[key] = val;
+            document.querySelectorAll(`.sss-btn-${key}`).forEach(btn => {
+                btn.classList.remove('border-blue-500', 'bg-blue-50', 'text-blue-600', 'dark:bg-blue-900/20');
+            });
+            const activeBtn = document.getElementById(`sss-${key}-${val}`);
+            activeBtn.classList.add('border-blue-500', 'bg-blue-50', 'text-blue-600', 'dark:bg-blue-900/20');
+            calcSSS();
+        }
+
+        function calcSSS() {
+            const dbp = parseFloat(document.getElementById('sss-dbp').value) || 0;
+            const totalEl = document.getElementById('sss-total');
+            const catEl = document.getElementById('sss-category');
+
+            if (sssData.con === null || sssData.vom === null || sssData.head === null || sssData.ath === null || dbp <= 0) {
+                totalEl.innerText = "0.0";
+                catEl.innerText = "Lengkapi data klinis";
+                catEl.className = "text-sm font-bold uppercase tracking-wide text-blue-500";
+                return;
+            }
+
+            const score = (2.5 * sssData.con) + (2 * sssData.vom) + (2 * sssData.head) + (0.1 * dbp) - (3 * sssData.ath) - 12;
+            totalEl.innerText = score.toFixed(1);
+
+            if (score > 1) {
+                catEl.innerText = "STROKE HEMORAGIK (PERDARAHAN)";
+                catEl.className = "text-sm font-bold uppercase tracking-wide text-rose-500";
+            } else if (score < -1) {
+                catEl.innerText = "STROKE ISKEMIK (INFARK)";
+                catEl.className = "text-sm font-bold uppercase tracking-wide text-emerald-500";
+            } else {
+                catEl.innerText = "HASIL MERAGUKAN (EQUIVOCAL)";
+                catEl.className = "text-sm font-bold uppercase tracking-wide text-amber-500";
+            }
+        }
+
+        function resetSSS() {
+            sssData = { con: null, vom: null, head: null, ath: null };
+            document.getElementById('sss-dbp').value = '';
+            document.querySelectorAll('[id^="sss-btn-"], [class*="sss-btn-"]').forEach(btn => {
+                btn.classList.remove('border-blue-500', 'bg-blue-50', 'text-blue-600', 'dark:bg-blue-900/20');
+            });
+            calcSSS();
+        }
+
+        // --- APGAR LOGIC ---
+        function renderApgar() {
+            const container = document.getElementById('apgar-options-container');
+            container.innerHTML = '';
+
+            Object.keys(apgarLabels).forEach(key => {
+                const section = apgarLabels[key];
+                let html = `
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center px-1">
+                            <span class="text-sm font-black dark:text-slate-200 uppercase tracking-wide border-l-4 border-purple-500 pl-2">${section.label}</span>
+                            <span class="text-[10px] font-black bg-purple-100 text-purple-600 dark:bg-purple-900/40 dark:text-purple-400 px-3 py-1 rounded-full">Poin: ${apgar[key] !== null ? apgar[key] : '-'}</span>
+                        </div>
+                        <div class="grid grid-cols-1 gap-2">
+                `;
+                
+                section.options.forEach(opt => {
+                    const isSelected = apgar[key] === opt.val;
+                    html += `
+                        <button onclick="setApgar('${key}', ${opt.val})" class="flex items-center justify-between p-3.5 rounded-xl border-2 transition-all ${isSelected ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 shadow-sm' : 'border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900'}">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full flex items-center justify-center font-black ${isSelected ? 'bg-purple-500 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'}">${opt.val}</div>
+                                <span class="text-xs font-bold ${isSelected ? 'text-purple-700 dark:text-purple-300' : 'text-slate-600 dark:text-slate-400'}">${opt.text}</span>
+                            </div>
+                        </button>
+                    `;
+                });
+                
+                html += `</div></div>`;
+                container.innerHTML += html;
+            });
+            updateApgarTotal();
+        }
+
+        function setApgar(key, val) {
+            apgar[key] = val;
+            renderApgar();
+        }
+
+        function resetApgar() {
+            apgar = { appearance: null, pulse: null, grimace: null, activity: null, respiration: null };
+            renderApgar();
+        }
+
+        function updateApgarTotal() {
+            const values = Object.values(apgar);
+            const allSelected = values.every(v => v !== null);
+            const total = values.reduce((a, b) => (a || 0) + (b || 0), 0);
+            
+            const totalEl = document.getElementById('apgar-total');
+            const catEl = document.getElementById('apgar-category');
+
+            if (!allSelected) {
+                totalEl.innerText = total;
+                catEl.innerText = "Silakan isi semua kriteria";
+                catEl.className = "text-sm font-bold uppercase tracking-wide text-slate-400";
+                return;
+            }
+
+            totalEl.innerText = total;
+            if (total >= 7) {
+                catEl.innerText = "Normal (Vigorous Baby)";
+                catEl.className = "text-sm font-bold uppercase tracking-wide text-emerald-500";
+            } else if (total >= 4) {
+                catEl.innerText = "Asfiksia Sedang (Mild/Moderate)";
+                catEl.className = "text-sm font-bold uppercase tracking-wide text-amber-500";
+            } else {
+                catEl.innerText = "Asfiksia Berat (Severe)";
+                catEl.className = "text-sm font-bold uppercase tracking-wide text-rose-500 font-black";
             }
         }
 
@@ -316,6 +597,11 @@
 
         function setGcs(key, val) {
             gcs[key] = val;
+            renderGcs();
+        }
+
+        function resetGcs() {
+            gcs = { e: 1, v: 1, m: 1 };
             renderGcs();
         }
 

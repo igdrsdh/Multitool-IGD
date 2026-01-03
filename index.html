@@ -8,9 +8,18 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&family=Jost:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; }
+        body { 
+            font-family: 'Jost', 'Google Sans', sans-serif; 
+        }
+        h1, h2, .font-black {
+            font-family: 'Google Sans', 'Jost', sans-serif;
+        }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
         input::-webkit-outer-spin-button,
@@ -45,14 +54,14 @@
 
         <!-- SECTION GCS -->
         <div class="section-container rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
-            <button onclick="toggleSection('gcs')" class="w-full p-5 flex items-center justify-between group">
+            <button onclick="toggleSection('gcs')" class="w-full p-5 flex items-center justify-between group text-left">
                 <div class="flex items-center gap-4">
                     <div class="p-2 rounded-lg bg-slate-50 dark:bg-slate-800"><i data-lucide="brain" class="text-rose-500"></i></div>
                     <span class="font-black text-slate-800 dark:text-white uppercase tracking-wider text-[12px]">Klasifikasi GCS</span>
                 </div>
                 <i data-lucide="chevron-down" id="icon-gcs" class="text-slate-400 transition-transform"></i>
             </button>
-            <div id="content-gcs" class="tab-content active p-5 pt-0 border-t border-slate-50 dark:border-slate-800">
+            <div id="content-gcs" class="tab-content p-5 pt-0 border-t border-slate-50 dark:border-slate-800">
                 <div class="bg-white dark:bg-slate-900 border-2 border-rose-500/20 rounded-2xl p-6 text-center mb-8 mt-4">
                     <div class="text-xs font-black text-rose-500 uppercase tracking-[0.2em] mb-2">Skor Total GCS</div>
                     <div id="gcs-total" class="text-6xl font-black dark:text-white mb-2">3</div>
@@ -66,7 +75,7 @@
 
         <!-- SECTION TBSA -->
         <div class="section-container rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
-            <button onclick="toggleSection('tbsa')" class="w-full p-5 flex items-center justify-between group">
+            <button onclick="toggleSection('tbsa')" class="w-full p-5 flex items-center justify-between group text-left">
                 <div class="flex items-center gap-4">
                     <div class="p-2 rounded-lg bg-slate-50 dark:bg-slate-800"><i data-lucide="flame" class="text-orange-500"></i></div>
                     <span class="font-black text-slate-800 dark:text-white uppercase tracking-wider text-[12px]">Luas Luka Bakar (TBSA)</span>
@@ -93,7 +102,7 @@
 
         <!-- SECTION DOSIS -->
         <div class="section-container rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
-            <button onclick="toggleSection('dosage')" class="w-full p-5 flex items-center justify-between group">
+            <button onclick="toggleSection('dosage')" class="w-full p-5 flex items-center justify-between group text-left">
                 <div class="flex items-center gap-4">
                     <div class="p-2 rounded-lg bg-slate-50 dark:bg-slate-800"><i data-lucide="syringe" class="text-cyan-500"></i></div>
                     <span class="font-black text-slate-800 dark:text-white uppercase tracking-wider text-[12px]">Kalkulator Dosis</span>
@@ -124,7 +133,7 @@
 
         <!-- SECTION INFUS -->
         <div class="section-container rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
-            <button onclick="toggleSection('infus')" class="w-full p-5 flex items-center justify-between group">
+            <button onclick="toggleSection('infus')" class="w-full p-5 flex items-center justify-between group text-left">
                 <div class="flex items-center gap-4">
                     <div class="p-2 rounded-lg bg-slate-50 dark:bg-slate-800"><i data-lucide="droplets" class="text-emerald-500"></i></div>
                     <span class="font-black text-slate-800 dark:text-white uppercase tracking-wider text-[12px]">Tetesan Infus (TPM)</span>
@@ -155,7 +164,7 @@
 
         <!-- SECTION SYRINGE PUMP -->
         <div class="section-container rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
-            <button onclick="toggleSection('pump')" class="w-full p-5 flex items-center justify-between group">
+            <button onclick="toggleSection('pump')" class="w-full p-5 flex items-center justify-between group text-left">
                 <div class="flex items-center gap-4">
                     <div class="p-2 rounded-lg bg-slate-50 dark:bg-slate-800"><i data-lucide="activity" class="text-indigo-500"></i></div>
                     <span class="font-black text-slate-800 dark:text-white uppercase tracking-wider text-[12px]">Syringe Pump</span>
@@ -237,6 +246,10 @@
             renderGcs();
             renderTbsaGrid();
             lucide.createIcons();
+            
+            // Tutup semua bagian saat load
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.transition-transform').forEach(i => i.style.transform = 'rotate(0deg)');
         };
 
         // --- UI FUNCTIONS ---
@@ -253,11 +266,10 @@
             const icon = document.getElementById(`icon-${id}`);
             const isActive = content.classList.contains('active');
             
-            // Close all
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.transition-transform').forEach(i => i.style.transform = 'rotate(0deg)');
-            
-            if (!isActive) {
+            if (isActive) {
+                content.classList.remove('active');
+                icon.style.transform = 'rotate(0deg)';
+            } else {
                 content.classList.add('active');
                 icon.style.transform = 'rotate(180deg)';
             }
@@ -398,7 +410,7 @@
             const totalVol = parseFloat(document.getElementById('pmp-total').value) || 0;
             
             if (mass > 0 && totalVol > 0) {
-                const concentration = (mass * 1000) / totalVol; // mcg/mL
+                const concentration = (mass * 1000) / totalVol;
                 const res = (dose * weight * 60) / concentration;
                 document.getElementById('pmp-result').innerText = res.toFixed(1) + ' mL/Jam';
             } else {
